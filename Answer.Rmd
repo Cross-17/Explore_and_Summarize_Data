@@ -30,7 +30,10 @@ summary(wine)
 ```{r echo=FALSE}
 
 # first histogram of quality
-ggplot(aes(x = quality), data = wine)  + geom_histogram(aes(y = (..count..)/sum(..count..))) + ggtitle("Plot of quality distribution") + ylab('percentage distribution')
+ggplot(aes(x = quality), data = wine)  + 
+geom_bar(aes(y = (..count..)/sum(..count..))) + 
+ggtitle("Plot of quality distribution") + 
+ylab('percentage distribution')
 print('summary of wine quality')
 summary(wine$quality)
 print('distribution of wine quality')
@@ -38,10 +41,17 @@ table(wine$quality)
 
 ```
 From the plot and statistical data we could see that over 80% sample of our quality level falls in 5 or 6. Nearly 95% falls in level 5,6 or 7.
-
+```{r echo=FALSE}
+plot.hist <- function(x,bw){
+    ggplot(wine, aes_string(x = x)) +
+    geom_histogram(binwidth = bw)
+}
+```
 ### Fix acid
 ```{r echo=FALSE}
-ggplot(aes(x = fixed.acidity), data = wine) + geom_histogram(binwidth = 0.1) +  scale_x_continuous(lim = c(4, 16)) + ggtitle('Fix acid distribution')
+plot.hist('fixed.acidity',0.1) +  
+scale_x_continuous(lim = c(4, 16)) + 
+ggtitle('Fix acid distribution')
 summary(wine$fixed.acidity)
 ```
 Fixed acidity is the measurement of tartaric acid (g/dm^3) in the wine.
@@ -51,7 +61,8 @@ Hist plot shows that this variable is left skewed
 ### Volatile acidity"
 ```{r echo=FALSE}
 
-ggplot(aes(x = volatile.acidity), data = wine) + geom_histogram(binwidth = 0.02)+ggtitle('Volatile acid distribution')
+plot.hist('volatile.acidity',0.02) +
+ggtitle('Volatile acid distribution')
 summary(wine$volatile.acidity)
 
 ```
@@ -62,10 +73,13 @@ This hist plot also shows that it is left skewed, with tail on the right.
 ### Citric acid
 ```{r echo=FALSE}
 
-  ggplot(aes(x = citric.acid), data = wine) + geom_histogram(binwidth = 0.01) + ggtitle('Citric acid distribution')
+plot.hist('citric.acid',0.01)+ 
+ggtitle('Citric acid distribution')
 summary(wine$citric.acid)
-print(paste("number of 0 citric acid: ",length(subset(wine,wine$citric.acid == 0)$citric.acid)))
-print(paste("number of 0 citric acid: ",length(subset(wine,wine$citric.acid == 1)$citric.acid)))
+print(paste("number of 0 citric acid: ",
+            length(subset(wine,wine$citric.acid == 0)$citric.acid)))
+print(paste("number of 0 citric acid: ",
+            length(subset(wine,wine$citric.acid == 1)$citric.acid)))
 
 ```
 citric acid is the measurement of citric acid (g/dm^3) in the wine. 
@@ -75,11 +89,13 @@ From the plot we could clearly see there is a spike on the left of the plot, whi
 ### Residual sugar
 ```{r echo=FALSE}
 
-ggplot(aes(x = residual.sugar), data = wine) + geom_histogram(binwidth = 0.05) + ggtitle('Residual sugar distribution')
+plot.hist('residual.sugar',0.1)+ 
+ggtitle('Residual sugar distribution')
 summary(wine$residual.sugar)
 IRQ <- 2.60 - 1.90
 print(paste("3rd quatile + 1.5*IRQ = ", 2.6 + 1.5*IRQ)) 
-print(paste("number of point could be considered as outlier:", length(subset(wine,residual.sugar >= 2.6 + 1.5*IRQ)$residual.sugar)))
+print(paste("number of point could be considered as outlier:",
+      length(subset(wine,residual.sugar >= 2.6 + 1.5*IRQ)$residual.sugar)))
 
 ```
 Residual sugar is the amount of sugar remaining after fermentation stops in the wine, it measures in (g/ dm^3)\
@@ -91,7 +107,9 @@ Through statistical analysis we found that IRQ = 0.7,while 3rd quatile value is 
 Thus we could plot this again with proper range(1-4)
 ```{r echo=FALSE}
 
-ggplot(aes(x = residual.sugar), data = wine) + geom_histogram(binwidth = 0.05) + scale_x_continuous(lim = c(1,4)) + ggtitle('Residual sugar distribution')
+plot.hist('residual.sugar',0.1) + 
+scale_x_continuous(lim = c(1,4)) + 
+ggtitle('Residual sugar distribution')
 ```
 
 This looks much better now.
@@ -99,11 +117,13 @@ This looks much better now.
 ### chlorides
 ```{r echo=FALSE}
 
-ggplot(aes(x = chlorides), data = wine) + geom_histogram(binwidth = 0.005) + ggtitle('chlorides distribution')
+plot.hist('chlorides',0.005) + 
+ggtitle('chlorides distribution')
 summary(wine$chlorides)
 IRQ <- 0.09 - 0.07
 print(paste("3rd quatile + 1.5*IRQ = ", 0.09 + 1.5*IRQ)) 
-print(paste("number of point could be considered as outlier:", length(subset(wine,residual.sugar >= 0.09 + 1.5*IRQ)$residual.sugar)))
+print(paste("number of point could be considered as outlier:",
+    length(subset(wine,residual.sugar >= 0.09 + 1.5*IRQ)$residual.sugar)))
 ```
 chlorides is the amount of salt in the wine, measured in (g/dm^3)
 Similar to the residual sugar plot, almost all of the sample falls in the left of the plot while only few outlier in the right.
@@ -111,7 +131,9 @@ Through statistical analysis we found that IRQ = 0.02,while 3rd quatile value is
 Thus we could plot this again with proper range(0-0.02)
 ```{r echo=FALSE}
 
-ggplot(aes(x = chlorides), data = wine) + geom_histogram(binwidth = 0.001) + scale_x_continuous(lim = c(0,0.2)) + ggtitle('chlorides distribution')
+plot.hist('chlorides',0.001) + 
+scale_x_continuous(lim = c(0,0.2)) + 
+ggtitle('chlorides distribution')
 ```
 
 This looks much better now  
@@ -119,8 +141,11 @@ This looks much better now
 ### Free sulfur dioxide
 ```{r echo=FALSE}
 
-p2 <- ggplot(aes(x = free.sulfur.dioxide), data = wine) + geom_histogram(binwidth = 0.05) + ggtitle('Free sulfur dioxide distribution log10') + scale_x_log10()
-p1 <- ggplot(aes(x = free.sulfur.dioxide), data = wine) + geom_histogram(binwidth = 1) + ggtitle('Free sulfur dioxide distribution')
+p2 <- plot.hist('free.sulfur.dioxide',0.05) + 
+ggtitle('Free sulfur dioxide distribution log10') + 
+scale_x_log10()
+p1 <- plot.hist('free.sulfur.dioxide',1) + 
+ggtitle('Free sulfur dioxide distribution')
 grid.arrange(p1, p2, ncol = 2)
 summary(wine$free.sulfur.dioxide)
 ```
@@ -132,8 +157,11 @@ The right plot is the original plot with log10 on the x aixs, on this plot the l
 ### Total sulfur dioxide
 ```{r echo=FALSE}
 
-p2 <- ggplot(aes(x = total.sulfur.dioxide), data = wine) + geom_histogram(binwidth = 0.05) + ggtitle('Total sulfur dioxide distribution log10') + scale_x_log10()
-p1 <- ggplot(aes(x = total.sulfur.dioxide), data = wine) + geom_histogram(binwidth = 1) + ggtitle('Total sulfur dioxide distribution')
+p2 <- plot.hist('total.sulfur.dioxide',0.05) + 
+ggtitle('Total sulfur dioxide distribution log10') + 
+scale_x_log10()
+p1 <-plot.hist('total.sulfur.dioxide',2) + 
+ggtitle('Total sulfur dioxide distribution')
 grid.arrange(p1, p2, ncol = 2)
 summary(wine$total.sulfur.dioxide)
 ```
@@ -144,7 +172,7 @@ Similar to free sulfur dioxide, total sulfur dioxide is also left skewed with lo
 
 ### Density
 ```{r echo=FALSE}
-ggplot(aes(x = density), data = wine) + geom_histogram(binwidth = 0.0001) + ggtitle('density distribution')
+plot.hist('density',0.0001) + ggtitle('density distribution')
 summary(wine$density)
 ```
 Density represents the density of the wine measure in (g / cm^3).  
@@ -153,7 +181,7 @@ The density variable has a comparatively normal distribution, centered on 1g/cm^
 ### pH
 
 ```{r echo=FALSE}
-ggplot(aes(x = pH), data = wine) + geom_histogram(binwidth = 0.01) + ggtitle('pH distribution')
+plot.hist('pH',0.01)  + ggtitle('pH distribution')
 summary(wine$pH)
 ```
 
@@ -164,8 +192,11 @@ Similar to density, pH also has a faily normal distribution.
 ### sulphates
 
 ```{r echo=FALSE}
-p2 <- ggplot(aes(x = sulphates), data = wine) + geom_histogram(binwidth = 0.01) + ggtitle('sulphates distribution log10') + scale_x_log10()
-p1 <- ggplot(aes(x = sulphates), data = wine) + geom_histogram(binwidth = 0.01) + ggtitle('sulphates distribution')
+p2 <- plot.hist('sulphates',0.01) + 
+  ggtitle('sulphates distribution log10') + 
+  scale_x_log10()
+p1 <- plot.hist('sulphates',0.01) + 
+  ggtitle('sulphates distribution')
 grid.arrange(p1, p2, ncol = 2)
 summary(wine$sulphates)
 ```
@@ -179,7 +210,7 @@ Take log10 on the x aixs make it have more normal distribution.
 ### alcohol
 
 ```{r echo=FALSE}
-ggplot(aes(x = alcohol), data = wine) + geom_histogram(binwidth = 0.2) + ggtitle('alcohol distribution')
+plot.hist('alcohol',0.2) + ggtitle('alcohol distribution')
 summary(wine$alcohol)
 ```
 
@@ -226,20 +257,20 @@ Other features, which below correlation +-0.2, are considered no correlation wit
 
 ```{r echo=FALSE}
 
-ggplot(aes(x = alcohol, y = quality), data = wine) +
-  geom_jitter()  + 
-  geom_smooth(method = 'lm') + ggtitle("alcohol vs quality scatter plot with trend line")
+p1<- ggplot(aes(x = alcohol, y = quality), data = wine) +
+  geom_jitter(alpha = 0.1)  + 
+  geom_smooth(method = 'lm') + 
+  ggtitle("alcohol vs quality scatter plot with \n trend line")
+p2<-ggplot(aes(x = factor(quality), y = alcohol), data = wine) +
+  geom_boxplot()  +
+  xlab("quality") + ggtitle("alcohol vs quality box plot")
+
+grid.arrange(p1,p2,ncol = 2)
 ```
 
 Scatter plot with smooth line above shows the relationship between quality and alcohol, who has the most correlation with quality. 
 
 The smooth line indicates the overall correlation of quality and alcohol.
-
-```{r echo=FALSE}
-ggplot(aes(x = factor(quality), y = alcohol), data = wine) +
-  geom_boxplot()  +
-  xlab("quality") + ggtitle("alcohol vs quality box plot")
-```
 
 Box plot above also reveals the overall trends: Higher quality the wine has, higher alcohol it contains. 
 
@@ -248,16 +279,18 @@ Box plot above also reveals the overall trends: Higher quality the wine has, hig
 
 ```{r echo=FALSE}
 # generate a bivariate grid using GGally
-ggplot(aes(x = volatile.acidity , y = quality), data = wine) +
-  geom_jitter()  + 
-  geom_smooth(method = 'lm') +  ggtitle("volatile acidity vs quality scatter plot with trend line")
-```
+p1<- ggplot(aes(x = volatile.acidity , y = quality), data = wine) +
+  geom_jitter(alpha = 0.1)  + 
+  geom_smooth(method = 'lm') +  
+  ggtitle("volatile acidity vs quality scatter plot with trend line")
 
-```{r echo=FALSE}
-ggplot(aes(x = factor(quality), y = volatile.acidity), data = wine) +
+p2<- ggplot(aes(x = factor(quality), y = volatile.acidity), data = wine) +
   geom_boxplot()  +
   xlab("quality") + ggtitle("volatile acidity vs quality box plot")
+grid.arrange(p1,p2,ncol = 2)
 ```
+
+
 
 Similar to plot in quality vs alcohol, the the points from scatter point could help visualizing the distribution of our samples. Smooth line could be viewed as trend line, help visualizing the correlation of the two features. Box plot could help visualizing statistic data in different group.
 
@@ -302,23 +335,25 @@ From ggpair plot we could find some strong correlations, such as density vs fix 
 Alcohol, with correlation score 0.476
 
 # Multivariate Plots Section
-
-
+```{r echo=FALSE}
+plot.multi <- function(x,y){
+    ggplot(wine, aes_string(x = x,y = y)) +
+    geom_jitter(aes(color = factor(quality) ), alpha = 0.5)+
+    scale_color_brewer(type = 'seq')
+}
+```
 
 ```{r echo=FALSE, Multivariate_Plots}
-ggplot(aes(x = alcohol, y = volatile.acidity), data = wine) +
-  geom_jitter(aes(color = factor(quality) )) + scale_color_brewer(type = 'qual')+
+plot.multi('alcohol','volatile.acidity')+
    ggtitle("volatile acidity vs alcohol, with quality as color")
 ```
 
 ```{r echo=FALSE}
-ggplot(aes(x = alcohol, y = sulphates), data = wine) +
-  geom_jitter(aes(color = factor(quality) )) + scale_color_brewer(type = 'qual')+
+plot.multi('alcohol','sulphates')+
   ggtitle("sulphates vs alcohol, with quality as color")
 ```
 ```{r echo=FALSE}
-ggplot(aes(x = alcohol, y = citric.acid), data = wine) +
-  geom_jitter(aes(color = factor(quality) )) + scale_color_brewer(type = 'qual')+
+plot.multi('alcohol','citric.acid')+
   ggtitle("citric acid vs alcohol, with quality as color")
 ```
 
@@ -344,7 +379,11 @@ In one word, visuliazing in this way strengthened our findings in bivariable sec
 
 ### Plot One
 ```{r echo=FALSE, Plot_One}
-ggplot(aes(x = quality), data = wine)  + geom_histogram(aes(y = (..count..)/sum(..count..))) + ggtitle("Plot of quality distribution") + ylab('percentage distribution')
+ggplot(aes(x = quality), data = wine)  + 
+geom_bar(aes(y = (..count..)/sum(..count..))) + 
+ggtitle("Plot of quality distribution") + 
+ylab('percentage distribution')+
+  xlab("quality score")
 ```
 
 ### Description One
@@ -357,7 +396,8 @@ It tells us that the quality feature is heavily biased, with half of its range(3
 ```{r echo=FALSE, Plot_Two}
 ggplot(aes(x = factor(quality), y = alcohol), data = wine) +
   geom_boxplot()  +
-  xlab("quality") + ggtitle("Box plot of alcohol vs quality")
+  xlab("quality score") + ggtitle("Box plot of alcohol vs quality")+ 
+  ylab("alcohol % by volume")
 ```
 
 ### Description Two
@@ -369,8 +409,10 @@ Alcohol have the most correlation with quality in our dataset, and the plot show
 ### Plot Three
 ```{r echo=FALSE, Plot_Three}
 ggplot(aes(x = alcohol, y = volatile.acidity), data = wine) +
-  geom_jitter(aes(color = factor(quality) )) + scale_color_brewer(type = 'qual')+
-  ggtitle("volatile acidity vs alcohol, with quality as color")
+  geom_jitter(aes(color = factor(quality) )) + scale_color_brewer(type = 'seq')+
+  ggtitle("volatile acidity vs alcohol, with quality as color")+
+  xlab("alcohol % by volume")+
+  ylab("volatile acidity in g/dm^3")
 ```
 
 ### Description Three
