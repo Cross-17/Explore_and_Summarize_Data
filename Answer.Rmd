@@ -6,6 +6,9 @@ Red Wine quality exploration by Zhengda He
 library(ggplot2)
 library(GGally)
 library(gridExtra)
+
+knitr::opts_chunk$set(fig.width=12, fig.height=8, fig.path='Figs/',
+                      echo=FALSE, warning=FALSE, message=FALSE)
 ```
 
 ```{r echo=FALSE, Load_the_Data}
@@ -243,7 +246,9 @@ I did not make any modification on the dataset, since this is a pretty tidy data
 
 ```{r echo=FALSE, Bivariate_Plots}
 # generate a bivariate grid using GGally
-ggpairs(wine[,2:13]) + ggtitle("pair plot in red wine dataset")
+wine.pair = wine
+wine.pair$X <- NULL
+ggpairs(wine.pair) + ggtitle("pair plot in red wine dataset")
 ```
 
 From the ggpair plot we could see that there are clearly some feature has correlation with quality.  
@@ -339,7 +344,7 @@ Alcohol, with correlation score 0.476
 plot.multi <- function(x,y){
     ggplot(wine, aes_string(x = x,y = y)) +
     geom_jitter(aes(color = factor(quality) ), alpha = 0.5)+
-    scale_color_brewer(type = 'seq')
+    scale_color_brewer(type = 'seq') + theme_dark()
 }
 ```
 
@@ -412,7 +417,7 @@ ggplot(aes(x = alcohol, y = volatile.acidity), data = wine) +
   geom_jitter(aes(color = factor(quality) )) + scale_color_brewer(type = 'seq')+
   ggtitle("volatile acidity vs alcohol, with quality as color")+
   xlab("alcohol % by volume")+
-  ylab("volatile acidity in g/dm^3")
+  ylab("volatile acidity in g/dm^3") +  theme_dark()
 ```
 
 ### Description Three
